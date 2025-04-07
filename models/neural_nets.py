@@ -13,6 +13,7 @@ print(df.shape)
 features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible']
 target = ["poison", 'edible']
 
+print(df.shape)
 class neural_network(nn.Module):
     def __init__(self):
         super().__init__()
@@ -96,13 +97,24 @@ def evaluate_acc(model, data) :
 #todo: implement accuracy
 #todo: split data
 
+def split(data, train_ratio = 0.8, validation_ratio = 0.1):
+    shuffled = data.sample(frac = 1)
+    divider1 = int(train_ratio*shuffled.shape[0])
+    divider2 = int((train_ratio+validation_ratio) * shuffled.shape[0])
+    train_set = shuffled[:divider1]
+    valid_set = shuffled[divider1 : divider2]
+    test = shuffled[divider2:]
+    return train_set, valid_set, test
 
+
+
+train_set, valid_set, test_set  = split(df)
 
 model = neural_network()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
-print(f'[  base  ] loss: {evaluate_loss(model, df, nn.BCELoss()) :.5f}')
-train(model, optimizer, df, nn.BCELoss())
+print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.BCELoss()) :.5f}')
+train(model, optimizer, train_set, nn.BCELoss())
 torch.save(model.state_dict(), "nn_MSE")
 print(evaluate_acc(model, df))
 
