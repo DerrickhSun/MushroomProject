@@ -10,8 +10,8 @@ import numpy as np
 df = pd.read_csv("mushroom_dataset_enum.csv")
 print(df.shape)
 
-features = [col for col in df.columns if col != 'class']
-discarded = []
+features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible']
+target = ["poison", 'edible']
 
 class neural_network(nn.Module):
     def __init__(self):
@@ -27,11 +27,15 @@ class neural_network(nn.Module):
             self.embeddings.append(nn.Embedding(n_categories, embed_dim))
 
         self.model = nn.Sequential(
-            nn.Linear(count, 500),
-            nn.ReLU(),
-            nn.Linear(500, 500),
-            nn.ReLU(),
-            nn.Linear(500, 1),
+            nn.Linear(count, 200),
+            nn.Sigmoid(),
+            nn.Linear(200, 200),
+            nn.Sigmoid(),
+            nn.Linear(200, 200),
+            nn.Sigmoid(),
+            nn.Linear(200, 200),
+            nn.Sigmoid(),
+            nn.Linear(200, 2),
             nn.Softmax(dim=1)
         )
         
@@ -44,17 +48,18 @@ class neural_network(nn.Module):
             #print(embed.shape)
         x = torch.cat(embed_inputs, dim = 1)
         #print(x.shape)
-        return self.model(x).squeeze(1)
+        return self.model(x)#.squeeze(1)
 
 
 # takes in dataframe for data
-def train(model, optimizer, data, loss_funct, batches = 1000, batch_size = 2000):
+def train(model, optimizer, data, loss_funct, batches = 100, batch_size = 100):
 
     for epoch in range(2):
         shuffled = data.sample(frac = 1)
         x = torch.from_numpy(shuffled[features].values).int()
-        y = torch.from_numpy(shuffled["class"].values).float()
+        y = torch.from_numpy(shuffled[target].values).float()
         running_loss = 0.0
+
         for i in range(min(batches, int(data.shape[0]/batch_size))):#range(data.shape[0]):
             inputs = x[batch_size*i : batch_size*(i+1)]
             labels = y[batch_size*i : batch_size*(i+1)]
@@ -67,30 +72,40 @@ def train(model, optimizer, data, loss_funct, batches = 1000, batch_size = 2000)
             optimizer.step()
 
             running_loss += loss.item()
-            running_loss += loss.item()
-            #if i % 10 == 9:    # print every 10 mini-batches
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss/10 :.5f}')
-            running_loss = 0.0
+            if i % 10 == 9:    # print every 10 mini-batches
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss/10 :.5f}')
+                print("example:",outputs[0], y[0],'\n')
+                running_loss = 0.0
+        print("------------------------------")
 
 
-def evaluate(model, data, loss_funct):
-    x = torch.from_numpy(data[features].values).float()
-    y = torch.from_numpy(data["class"].values).float()
+def evaluate_loss(model, data, loss_funct):
+    x = torch.from_numpy(data[features].values).int()
+    y = torch.from_numpy(data[target].values).float()
     pred = model(x)
+    print("example:",pred[0], y[0],'\n')
     return loss_funct(pred, y)
+
+def evaluate_acc(model, data) :
+    x = torch.from_numpy(data[features].values).int()
+    y = torch.from_numpy(data[target].values).int()
+    y_hat = model(x)
+    pred = torch.tensor([1 if i[0] >= 0.5 else 0 for i in y_hat])
+    print(pred.shape)
+    return torch.sum(torch.abs(pred-y[:,0])).item()/pred.shape[0]
+#todo: implement accuracy
+#todo: split data
 
 
 
 model = neural_network()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.00001, momentum=0.9)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
-train(model, optimizer, df, nn.MSELoss())
+print(f'[  base  ] loss: {evaluate_loss(model, df, nn.BCELoss()) :.5f}')
+train(model, optimizer, df, nn.BCELoss())
 torch.save(model.state_dict(), "nn_MSE")
+print(evaluate_acc(model, df))
 
-print(df[features].shape)
-
-x = df[features]
-y = df["class"]
 #print(x.dtypes)
 
 '''models = []
