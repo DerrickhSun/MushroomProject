@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 df = pd.read_csv("mushroom_dataset_enum.csv")
-print(df.shape)
 
 features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible']
 target = ["poison", 'edible']
@@ -27,15 +26,15 @@ class neural_network(nn.Module):
             self.embeddings.append(nn.Embedding(n_categories, embed_dim))
 
         self.model = nn.Sequential(
-            nn.Linear(count, 200),
+            nn.Linear(count, 1000),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(1000, 1000),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(1000, 1000),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(1000, 1000),
             nn.Sigmoid(),
-            nn.Linear(200, 2),
+            nn.Linear(1000, 2),
             nn.Softmax(dim=1)
         )
         
@@ -48,7 +47,7 @@ class neural_network(nn.Module):
             #print(embed.shape)
         x = torch.cat(embed_inputs, dim = 1)
         #print(x.shape)
-        return self.model(x)#.squeeze(1)
+        return self.model(x)
 
 
 # takes in dataframe for data
@@ -104,9 +103,7 @@ def split(data, train_ratio = 0.8, validation_ratio = 0.1):
 
 
 
-train_set, valid_set, test_set  = split(df, validation_ratio=0)
-print(train_set.head(1))
-print(test_set.head(1))
+train_set, valid_set, test_set  = split(df)
 
 model = neural_network()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
@@ -114,7 +111,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.BCELoss()) :.5f}')
 train(model, optimizer, train_set, nn.BCELoss())
 torch.save(model.state_dict(), "nn_MSE")
-
 print("training:", evaluate_acc(model, train_set))
 print("test:", evaluate_acc(model, test_set))
 
