@@ -8,34 +8,43 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 df = pd.read_csv("mushroom_dataset_enum.csv")
-print(df.shape)
 
-features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible']
+features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible' and col != "Unnamed: 0"]
 target = ["poison", 'edible']
 
-class neural_network(nn.Module):
+class MSE_Loss(nn.Module):
     def __init__(self):
+        super().__init__()
+    
+    def forward(self, y_pred, y_true):
+        # Implementation of custom loss calculation
+        diff = torch.sub(y_true, y_pred)
+        return torch.mean(torch.square(diff))
+
+class neural_network(nn.Module):
+    def __init__(self, n = 1000):
         super().__init__()
         self.embeddings = []
 
         count = 0
         for feature in features:
             n_categories = df[feature].nunique()
-            embed_dim = min(50, (n_categories + 1) // 2)
+            embed_dim = n_categories#min(50, (n_categories + 1) // 2)
             count+=embed_dim
-
             self.embeddings.append(nn.Embedding(n_categories, embed_dim))
-
+        
         self.model = nn.Sequential(
-            nn.Linear(count, 200),
+            nn.Linear(count, n),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(n, n),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(n, n),
             nn.Sigmoid(),
-            nn.Linear(200, 200),
+            nn.Linear(n, n),
             nn.Sigmoid(),
-            nn.Linear(200, 2),
+            nn.Linear(n, n),
+            nn.Sigmoid(),
+            nn.Linear(n, 2),
             nn.Softmax(dim=1)
         )
         
@@ -46,15 +55,17 @@ class neural_network(nn.Module):
             embed = self.embeddings[feature_index](x[:,feature_index])
             embed_inputs.append(embed)
             #print(embed.shape)
+        #print(x[:5], torch.cat(embed_inputs, dim = 1)[:5,:10])
         x = torch.cat(embed_inputs, dim = 1)
+        #print(x[0,:10])
         #print(x.shape)
-        return self.model(x)#.squeeze(1)
+        return self.model(x)
 
 
 # takes in dataframe for data
 def train(model, optimizer, data, loss_funct, batches = 100, batch_size = 100):
 
-    for epoch in range(2):
+    for epoch in range(100):
         shuffled = data.sample(frac = 1)
         x = torch.from_numpy(shuffled[features].values).int()
         y = torch.from_numpy(shuffled[target].values).float()
@@ -66,15 +77,20 @@ def train(model, optimizer, data, loss_funct, batches = 100, batch_size = 100):
 
             optimizer.zero_grad()
 
+            #print(torch.sum(inputs,dim=1))
+            #print(torch.sum(inputs,dim=1).shape)
+            #print("try:")
+            #print(inputs[:5])
             outputs = model(inputs)
+            #print(outputs[:5])
             loss = loss_funct(outputs, labels)
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
-            if i % 10 == 9:    # print every 10 mini-batches
+            if i % min(batches, int(data.shape[0]/batch_size)) == min(batches, int(data.shape[0]/batch_size)) - 1:    # print every 10 mini-batches
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss/10 :.5f}')
-                print("example:",outputs[0], y[0],'\n')
+                print("example: ", "predicted", outputs[0:5].detach(), ", actual", labels[0:5],'\n')
                 running_loss = 0.0
         print("------------------------------")
 
@@ -91,7 +107,9 @@ def evaluate_acc(model, data) :
     y = torch.from_numpy(data[target].values).int()
     y_hat = model(x)
     pred = torch.tensor([1 if i[0] >= 0.5 else 0 for i in y_hat])
-    return torch.sum(torch.abs(pred-y[:,0])).item()/pred.shape[0]
+    print(y_hat)
+    #print(y[:,0])
+    return 1-torch.sum(torch.abs(pred-y[:,0])).item()/pred.shape[0]
 
 def split(data, train_ratio = 0.8, validation_ratio = 0.1):
     shuffled = data.sample(frac = 1)
@@ -104,17 +122,16 @@ def split(data, train_ratio = 0.8, validation_ratio = 0.1):
 
 
 
-train_set, valid_set, test_set  = split(df, validation_ratio=0)
-print(train_set.head(1))
-print(test_set.head(1))
+train_set, valid_set, test_set  = split(df)
+#train_set = train_set[train_set['poison']==1]
+#train_set.to_csv("test.csv")
 
-model = neural_network()
+model = neural_network(n = 1000)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
-print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.BCELoss()) :.5f}')
-train(model, optimizer, train_set, nn.BCELoss())
+print(f'[  base  ] loss: {evaluate_loss(model, train_set, MSE_Loss()) :.5f}')
+train(model, optimizer, train_set, MSE_Loss())
 torch.save(model.state_dict(), "nn_MSE")
-
 print("training:", evaluate_acc(model, train_set))
 print("test:", evaluate_acc(model, test_set))
 
