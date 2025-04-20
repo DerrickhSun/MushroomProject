@@ -81,7 +81,7 @@ class neural_network(nn.Module):
 def train(model, optimizer, data, loss_funct, batches = 100, batch_size = 5):
 
     # each epoch shuffles and goes over the data
-    for epoch in range(300):
+    for epoch in range(20):
         shuffled = data.sample(frac = 1)
         x = torch.from_numpy(shuffled[features].values).int()
         y = torch.from_numpy(shuffled[target].values).float()
@@ -137,31 +137,41 @@ def split(data, train_ratio = 0.8, validation_ratio = 0.1):
     test_set = shuffled[divider2:]
     return train_set, valid_set, test_set
 
+if __name__ == "__main__":
+    #print(df[features])
+    train_set, valid_set, test_set  = split(df, train_ratio = 0.9, validation_ratio = 0)
+    train_set.to_csv("training.csv")
+    valid_set.to_csv("validation.csv")
+    test_set.to_csv("testing.csv")
+    
+    #train_set = train_set[train_set['poison']==1]
+    #train_set.to_csv("test.csv")
 
-print(df[features])
-train_set, valid_set, test_set  = split(df, train_ratio = 0.9, validation_ratio = 0)
-#train_set = train_set[train_set['poison']==1]
-#train_set.to_csv("test.csv")
+    model = neural_network(n=10000)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
 
-model = neural_network(n=10000)
-optimizer = torch.optim.SGD(model.parameters(), lr=0.0001)
+    print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.CrossEntropyLoss()) :.5f}')
+    train(model, optimizer, train_set, nn.CrossEntropyLoss())
+    torch.save(model.state_dict(), "nn_CEL")
+    print("training:", evaluate_acc(model, train_set))
+    print("test:", evaluate_acc(model, test_set))
 
-print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.CrossEntropyLoss()) :.5f}')
-train(model, optimizer, train_set, nn.CrossEntropyLoss())
-torch.save(model.state_dict(), "nn_CEL")
-print("training:", evaluate_acc(model, train_set))
-print("test:", evaluate_acc(model, test_set))
-
-#print(x.dtypes)
-
-'''models = []
-for i in range(1, 10, 1):
-    percentile = 0.1*i
-    model = quantile_regression()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.00001, momentum=0.9)
+    print("prob:", evaluate_acc(model, df))
 
     
-    train(model, optimizer, df, quantile_loss())
-    models.append(model)
-    torch.save(model.state_dict(), "quantile_regression"+str(int(percentile*100))+"percentile")
-    print("saved percentile regression " + str(percentile))'''
+    
+    model.load_state_dict(torch.load("nn_CEL", weights_only=True))
+    print("test:", evaluate_acc(model, df))
+
+
+    '''models = []
+    for i in range(1, 10, 1):
+        percentile = 0.1*i
+        model = quantile_regression()
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.00001, momentum=0.9)
+
+        
+        train(model, optimizer, df, quantile_loss())
+        models.append(model)
+        torch.save(model.state_dict(), "quantile_regression"+str(int(percentile*100))+"percentile")
+        print("saved percentile regression " + str(percentile))'''
