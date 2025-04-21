@@ -7,7 +7,7 @@
 
 ## Setup
 ```bash
-git clone https://github.com/YourUser/CS573MushroomProject.git
+git clone https://github.com/DerrickhSun/CS573MushroomProject.git
 cd CS573MushroomProject
 
 use
