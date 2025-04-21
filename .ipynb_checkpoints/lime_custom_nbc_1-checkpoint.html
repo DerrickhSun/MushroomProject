@@ -37089,25 +37089,25 @@
 /***/ })
 /******/ ]);
 //# sourceMappingURL=bundle.js.map </script></head><body>
-        <div class="lime top_div" id="top_divHWKXI5NLHY4XYRR"></div>
+        <div class="lime top_div" id="top_divTSX6I61T9LD1DPL"></div>
         
         <script>
-        var top_div = d3.select('#top_divHWKXI5NLHY4XYRR').classed('lime top_div', true);
+        var top_div = d3.select('#top_divTSX6I61T9LD1DPL').classed('lime top_div', true);
         
             var pp_div = top_div.append('div')
                                 .classed('lime predict_proba', true);
             var pp_svg = pp_div.append('svg').style('width', '100%');
-            var pp = new lime.PredictProba(pp_svg, ["p", "e"], [7.1676268139987556e-06, 0.999992832373186]);
+            var pp = new lime.PredictProba(pp_svg, ["p", "e"], [0.999999999766847, 2.331530010167897e-10]);
             
         
         var exp_div;
             var exp = new lime.Explanation(["p", "e"]);
         
                 exp_div = top_div.append('div').classed('lime explanation', true);
-                exp.show([["odor=n", 0.38099789225466235], ["stalk-surface-above-ring=s", 0.1151676847336829], ["gill-spacing=w", 0.11437763569520165], ["spore-print-color=n", 0.11200700077973066], ["bruises=f", -0.1085032923560304]], 1, exp_div);
+                exp.show([["gill-color=b", -0.3445503499937411], ["odor=y", -0.24626496538771994], ["stalk-surface-above-ring=s", 0.1259861257616943], ["gill-size=n", -0.10608341490508563], ["stalk-surface-below-ring=s", 0.10056097506020446]], 1, exp_div);
                 
         var raw_div = top_div.append('div');
-            exp.show_raw_tabular([["odor=n", "True", 0.38099789225466235], ["stalk-surface-above-ring=s", "True", 0.1151676847336829], ["gill-spacing=w", "True", 0.11437763569520165], ["spore-print-color=n", "True", 0.11200700077973066], ["bruises=f", "True", -0.1085032923560304]], 1, raw_div);
+            exp.show_raw_tabular([["gill-color=b", "True", -0.3445503499937411], ["odor=y", "True", -0.24626496538771994], ["stalk-surface-above-ring=s", "True", 0.1259861257616943], ["gill-size=n", "True", -0.10608341490508563], ["stalk-surface-below-ring=s", "True", 0.10056097506020446]], 1, raw_div);
         
         </script>
         </body></html>
