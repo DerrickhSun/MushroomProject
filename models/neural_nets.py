@@ -78,10 +78,13 @@ class neural_network(nn.Module):
 
 
 # takes in dataframe for data
-def train(model, optimizer, data, loss_funct, batches = 100, batch_size = 5):
+def train(model, optimizer, data, loss_funct,         epochs=5,      # ↓ fewer passes
+          batches=50,    # ↓ fewer mini‐batches per epoch
+          batch_size=32  # ↑ bigger chunks
+         ):
 
     # each epoch shuffles and goes over the data
-    for epoch in range(20):
+    for epoch in range(epochs):
         shuffled = data.sample(frac = 1)
         x = torch.from_numpy(shuffled[features].values).int()
         y = torch.from_numpy(shuffled[target].values).float()
@@ -147,11 +150,16 @@ if __name__ == "__main__":
     #train_set = train_set[train_set['poison']==1]
     #train_set.to_csv("test.csv")
 
-    model = neural_network(n=10000)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
-
-    print(f'[  base  ] loss: {evaluate_loss(model, train_set, nn.CrossEntropyLoss()) :.5f}')
-    train(model, optimizer, train_set, nn.CrossEntropyLoss())
+    model = neural_network(n=1000)                       # slightly smaller
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)  # bigger LR
+    train( model,
+           optimizer,
+           train_set,
+           nn.CrossEntropyLoss(),
+           epochs=5,      # five passes
+           batches=30,    # ~30 mini‐batches/epoch
+           batch_size=64  # 64 samples at once
+         )
     torch.save(model.state_dict(), "nn_CEL")
     print("training:", evaluate_acc(model, train_set))
     print("test:", evaluate_acc(model, test_set))
