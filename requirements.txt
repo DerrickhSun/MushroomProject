@@ -7,4 +7,10 @@ shap==0.41.0
 matplotlib==3.6.2
 torch==2.1.0
 tensorflow==2.11.0
+numpy<2.0
+scikit-learn
+scikit-learn-extra
 lime
+shap
+matplotlib
+joblib
