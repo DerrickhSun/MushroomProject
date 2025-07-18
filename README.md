@@ -53,8 +53,17 @@ jupyter notebook DTLIME.ipynb
 The classification models can also be run without the explainability analysis.
 
 ### Naive Bayes Classifier
+To run the Naive Bayes classifier:
+```bash
+python nbc.py
+```
 
 ### Decision Tree
+To run the decision tree classifier:
+```bash
+python tree_impl.py
+```
+Alternatively, look at tree_impl.ipynb.
 
 ### Neural Network
 To run the neural net classifier:
