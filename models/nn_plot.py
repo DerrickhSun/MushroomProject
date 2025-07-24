@@ -1,7 +1,7 @@
 import torch
 import pandas as pd
-from neural_nets import neural_network
-from neural_nets import evaluate_acc
+from .neural_nets import neural_network
+from .neural_nets import evaluate_acc
 import numpy as np
 import matplotlib.pyplot as plt
 

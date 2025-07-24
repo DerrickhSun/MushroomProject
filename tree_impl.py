@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import math
 from sklearn.model_selection import train_test_split
 
-dataset_path = "mushroom_dataset.csv"
+dataset_path = "data/mushroom_dataset.csv"
 if not os.path.exists(dataset_path):
     raise FileNotFoundError("Dataset not found.")
 

@@ -259,7 +259,7 @@ class NBC:
 
 def load_dataset():
     try:
-        return pd.read_csv("mushroom_dataset.csv")
+        return pd.read_csv("data/mushroom_dataset.csv")
     except FileNotFoundError:
         print("Error: mushroom_dataset.csv not found in the current directory")
         return None
