@@ -143,9 +143,9 @@ def split(data, train_ratio = 0.8, validation_ratio = 0.1):
 if __name__ == "__main__":
     #print(df[features])
     train_set, valid_set, test_set  = split(df, train_ratio = 0.9, validation_ratio = 0)
-    train_set.to_csv("training.csv")
-    valid_set.to_csv("validation.csv")
-    test_set.to_csv("testing.csv")
+    train_set.to_csv("data/training.csv")
+    valid_set.to_csv("data/validation.csv")
+    test_set.to_csv("data/testing.csv")
     
     #train_set = train_set[train_set['poison']==1]
     #train_set.to_csv("test.csv")
