@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-df = pd.read_csv("mushroom_dataset_enum.csv")
+df = pd.read_csv("data/mushroom_dataset_enum.csv")
 
 features = [col for col in df.columns if col != 'class' and col != 'poison' and col != 'edible' and col != "Unnamed: 0"]
 target = ["poison", 'edible']
