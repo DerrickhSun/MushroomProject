@@ -10,7 +10,7 @@ Our final results can be found here: https://github.com/DerrickhSun/CS573Mushroo
 
 ### Prerequisites
 - Git
-- Python 3.12
+- Python 3.11
 - `pip` package manager
 
 ### Steps
@@ -24,7 +24,7 @@ cd CS573MushroomProject
 2. Creating and activating a virtual environment
 ```bash
 # Create venv
-python3.12 -m venv .venv
+python3.11 -m venv .venv
 
 # Activate venv (macOS/Linux)
 source .venv/bin/activate
@@ -40,13 +40,16 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Running the LIME + NBC pipeline + NBC pipeline
+## Running with LIME
+The notebooks in the eval/lime folder are for running with LIME, and will output their results in lime_results. For example:
+
+### Running the LIME + NBC pipeline + NBC pipeline
 ```bash
 # Run the LIME Naïve Bayes notebook
 jupyter notebook LIMENBC.ipynb
 ```
 
-## Running the Decision Tree + LIME pipeline
+### Running the Decision Tree + LIME pipeline
 ```bash
 jupyter notebook DTLIME.ipynb
 ```
@@ -57,13 +60,13 @@ The classification models can also be run without the explainability analysis.
 ### Naive Bayes Classifier
 To run the Naive Bayes classifier:
 ```bash
-python nbc.py
+python models/nbc.py
 ```
 
 ### Decision Tree
 To run the decision tree classifier:
 ```bash
-python tree_impl.py
+python models/tree_impl.py
 ```
 Alternatively, look at tree_impl.ipynb.
 
@@ -76,7 +79,6 @@ The resulting neural network will be saved as "nn_CEL," which should be able to 
 ```bash
 model.load_state_dict(torch.load("nn_CEL", weights_only=True))
 ```
-See models/nn_plot.py or models/nn_plots.ipynb for examples.
 
 ## Ignoring the virtual environment
 To prevent your `.venv/` directory from being tracked:
