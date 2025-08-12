@@ -4,7 +4,7 @@ This repository contains code for explainability analyses on mushroom classifica
 
 We used public data from the University of California, Irvine. It can be found here: https://www.kaggle.com/datasets/uciml/mushroom-classification.
 
-Our final results can be found here: https://github.com/DerrickhSun/CS573MushroomProject/blob/main/CS573%20Mushroom%20Project.pdf.
+Our final results can be found here: https://github.com/DerrickhSun/CS573MushroomProject/blob/main/Report.pdf.
 
 ## Getting started
 
