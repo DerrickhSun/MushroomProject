@@ -1,4 +1,4 @@
-# CS573 Mushroom Project
+# Mushroom Project
 
 This repository contains code for explainability analyses on mushroom classification models (Naïve Bayes, Decision Tree, Neural Network) using LIME and k‑medoids.
 
